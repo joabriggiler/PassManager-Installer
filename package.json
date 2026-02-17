@@ -1,0 +1,46 @@
+{
+  "name": "pass-manager",
+  "version": "1.0.0",
+  "description": "PassManager es una app para administrar contraseñas.",
+  "author": "Briga",
+  "license": "MIT",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^30.5.1",
+    "electron-builder": "^24.13.3",
+    "electron-reloader": "^1.2.3"
+  },
+  "build": {
+    "appId": "com.passmanager.app",
+    "productName": "PassManager",
+    "asar": true,
+    "compression": "maximum",
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "*.html",
+      "*.css",
+      "*.js",
+      "assets/**/*",
+      "favicon.ico"
+    ],
+    "win": {
+      "icon": "build/icon.ico",
+      "target": ["nsis", "portable"]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "publish": [
+      { "provider": "github" }
+    ]
+  }
+}

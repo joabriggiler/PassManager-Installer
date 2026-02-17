@@ -1,0 +1,6 @@
+node_modules/
+dist/
+*.log
+
+# electron-builder cache
+/electron-builder-cache/
