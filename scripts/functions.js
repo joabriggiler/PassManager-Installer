@@ -197,22 +197,18 @@ async function navegarA(pagina) {
     const loader    = document.getElementById('load_page');
     const timeoutMsg = document.getElementById('load-timeout-msg');
 
-    loader.classList.remove('disabled');
+    loader?.classList.remove('disabled');
     container.style.opacity = "0";
     if (timeoutMsg) timeoutMsg.style.display = "none";
 
     const cargaLentaTimer = setTimeout(() => {
-        // Si después de 5s el loader NO tiene la clase 'disabled', mostramos el P
-        if (!loader.classList.contains('disabled')) {
-            if (timeoutMsg) timeoutMsg.style.display = "block";
+        if (timeoutMsg && loader && !loader.classList.contains('disabled')) {
+        timeoutMsg.style.display = "block";
         }
     }, 5000);
 
-    loader.classList.remove('disabled');
-    container.style.opacity = "0"; // Ocultamos solo el contenido
-
     try {
-        await new Promise(resolve => setTimeout(resolve, 250));
+        await new Promise(r => setTimeout(r, 250));
 
         let paginaAServir = pagina;
 
@@ -255,25 +251,22 @@ async function navegarA(pagina) {
                 const idGuardado = localStorage.getItem("edit_cuenta_id");
                 await prepararVistaEditService(idGuardado);
             }
-            
-            // Apagamos el loader para todas las demás (incluida dashboard-empty)
-            container.style.opacity = "1";
-            loader.classList.add('disabled');
         }
-        clearTimeout(cargaLentaTimer);
 
-    } catch (err) {
-        loader.classList.add('disabled');
         container.style.opacity = "1";
-        
-        // Verificamos si hay sesión para decidir a dónde reintentar
+        loader?.classList.add('disabled');
+    } catch (err) {
+        loader?.classList.add('disabled');
+        container.style.opacity = "1";
         const destinoRedir = getAccessToken() ? 'dashboard' : 'login';
-        
         container.innerHTML = `
             <p class="anotacion">
-                Error al cargar la página. 
-                <a href="#" onclick="navegarA('${destinoRedir}')">Reintentar</a>
+            Error al cargar la página. 
+            <a href="#" onclick="navegarA('${destinoRedir}')">Reintentar</a>
             </p>`;
+    } finally {
+        clearTimeout(cargaLentaTimer);
+        if (timeoutMsg) timeoutMsg.style.display = "none";
     }
 }
 
