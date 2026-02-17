@@ -2,8 +2,11 @@
   "name": "pass-manager",
   "version": "1.0.0",
   "description": "PassManager es una app para administrar contraseñas.",
-  "author": "Briga",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joabriggiler/PassManager-by-Briga.git"
+  },
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -40,7 +43,7 @@
       "allowToChangeInstallationDirectory": true
     },
     "publish": [
-      { "provider": "github" }
+      { "provider": "github", "channel": "latest" }
     ]
   }
 }
