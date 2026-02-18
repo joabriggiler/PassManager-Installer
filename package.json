@@ -11,7 +11,7 @@
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder --publish never"
+    "dist": "electron-builder --publish always"
   },
   "devDependencies": {
     "electron": "^30.5.1",
@@ -35,14 +35,23 @@
     ],
     "win": {
       "icon": "build/icon.ico",
-      "target": ["nsis", "portable"]
+      "target": [
+        "nsis",
+        "portable"
+      ]
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
     },
     "publish": [
-      { "provider": "github", "channel": "latest" }
+      {
+        "provider": "github",
+        "channel": "latest"
+      }
     ]
+  },
+  "dependencies": {
+    "electron-updater": "^6.7.3"
   }
 }

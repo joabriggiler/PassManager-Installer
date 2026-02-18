@@ -1,12 +1,33 @@
-const { app, BrowserWindow, ipcMain, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu } = require("electron");
+const path = require("path");
 
-const path = require('path');
-
-if (!app.isPackaged && process.env.ELECTRON_RELOAD === '1') {
-    require('electron-reloader')(module);
+// Hot reload SOLO en desarrollo (si lo activás con ELECTRON_RELOAD=1)
+if (!app.isPackaged && process.env.ELECTRON_RELOAD === "1") {
+    require("electron-reloader")(module);
 }
 
-let win; // Declaramos la variable fuera para tener acceso global en este archivo
+// Auto-updater (solo se usa en builds instaladas)
+const { autoUpdater } = require("electron-updater");
+
+if (app.isPackaged) {
+    autoUpdater.on("checking-for-update", () => console.log("[Updater] Checking for update..."));
+    autoUpdater.on("update-available", () => console.log("[Updater] Update available"));
+    autoUpdater.on("update-not-available", () => console.log("[Updater] No updates"));
+    autoUpdater.on("download-progress", (p) =>
+        console.log(`[Updater] Downloading: ${Math.round(p.percent)}%`)
+    );
+
+    autoUpdater.on("update-downloaded", () => {
+        console.log("[Updater] Update downloaded. Installing...");
+        autoUpdater.quitAndInstall();
+    });
+
+    autoUpdater.on("error", (err) => {
+        console.error("[Updater] Error:", err);
+    });
+}
+
+let win; // referencia global a la ventana principal
 
 function createWindow() {
     win = new BrowserWindow({
@@ -71,7 +92,14 @@ function createWindow() {
     });
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+    createWindow();
+
+    // Auto-update SOLO en build instalado
+    if (app.isPackaged) {
+        autoUpdater.checkForUpdatesAndNotify();
+    }
+});
 
 // Lógica mejorada usando la instancia 'win' directamente
 ipcMain.on('minimize-app', () => {
