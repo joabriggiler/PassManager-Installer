@@ -26,7 +26,7 @@ function createWindow() {
         }
     });
 
-    win.loadFile('index.html');
+    win.loadFile(path.join(__dirname, 'index.html'));
     if (!app.isPackaged) {
         //win.webContents.openDevTools();
     }

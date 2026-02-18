@@ -29,8 +29,8 @@
       "index.html",
       "*.html",
       "*.css",
-      "*.js",
-      "assets/**/*",
+      "scripts/**/*",
+      "resources/**/*",
       "favicon.ico"
     ],
     "win": {

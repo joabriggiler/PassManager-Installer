@@ -414,10 +414,23 @@ function alternarBotonFormulario(texto = 'Entrar') {
 
 // Inicio de la App
 async function inicializarApp() {
-    console.log("Inicializando aplicación...");
+    const loader = document.getElementById('load_page');
+    const timeoutMsg = document.getElementById('load-timeout-msg');
 
-    // intenta restaurar sesión vía cookie HttpOnly (refresh)
+    // asegurar estado inicial
+    loader?.classList.remove('disabled');
+    if (timeoutMsg) timeoutMsg.style.display = "none";
+
+    const t = setTimeout(() => {
+        if (timeoutMsg && loader && !loader.classList.contains('disabled')) {
+        timeoutMsg.style.display = "block";
+        }
+    }, 5000);
+
     const ok = await refreshAccessToken();
+
+    clearTimeout(t);
+    if (timeoutMsg) timeoutMsg.style.display = "none";
 
     if (ok) navegarA('dashboard');
     else navegarA('login');
