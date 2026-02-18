@@ -34,7 +34,7 @@
       "favicon.ico"
     ],
     "win": {
-      "icon": "build/icon.ico",
+      "icon": "favicon.ico",
       "target": [
         "nsis",
         "portable"
