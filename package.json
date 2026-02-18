@@ -47,7 +47,8 @@
     "publish": [
       {
         "provider": "github",
-        "channel": "latest"
+        "channel": "latest",
+        "releaseType": "release"
       }
     ]
   },
