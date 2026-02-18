@@ -16,13 +16,33 @@ PassManager es una aplicación de escritorio (Electron) para **guardar y adminis
 
 ---
 
+## 🕵️ Privacidad
+
+- **Sin telemetría / analytics:** la app **no integra SDKs de tracking** (Sentry/PostHog/Segment/Mixpanel/Amplitude/etc.).
+- **Sin anuncios.**
+- **Datos cifrados end-to-end:** el servidor no puede leer tus credenciales sin tu contraseña maestra.
+
+> Nota: esto no reemplaza una auditoría externa. Si encontrás un problema de seguridad, ver “Reporte de seguridad”.
+
+---
+
+## 🌐 Conectividad (qué servidores toca la app)
+
+PassManager realiza conexiones de red únicamente para:
+
+1. **API de PassManager** (login/sync): `https://passmanager-api.onrender.com` :contentReference[oaicite:0]{index=0}  
+2. **Autocompletado opcional de servicios (Clearbit):** `https://autocomplete.clearbit.com` :contentReference[oaicite:1]{index=1}  
+3. **Auto-actualizaciones (solo instalador):** consulta releases/publicación en **GitHub** vía `electron-updater` :contentReference[oaicite:2]{index=2}
+
+---
+
 ## 📦 Descargar e instalar (Usuarios)
 
 En **Releases** vas a encontrar dos builds:
 
 - ✅ **Instalador (recomendado):** `PassManager-Setup-x.y.z.exe`  
   - Se instala como cualquier app de Windows  
-  - **Incluye auto-actualizaciones** (cuando hay nuevas versiones)
+  - **Incluye auto-actualizaciones**
 - ⚪ **Portable:** `PassManager-x.y.z.exe`  
   - No requiere instalación  
   - Puede no ser ideal para actualizaciones
@@ -43,10 +63,13 @@ Este repositorio implementa medidas para reducir riesgos comunes, sin exponer de
 - **Claves derivadas desde contraseña:** la clave de la bóveda se deriva localmente usando un KDF con parámetros fuertes.
 - **Autenticación sin enviar la contraseña:** el login no transmite la contraseña en texto plano al servidor.
 - **Sesiones con tokens:** el backend emite tokens de acceso de corta duración y un mecanismo de renovación.
-- **Aislamiento del renderer (Electron):** configuración orientada a reducir superficie de ataque (contextIsolation, sin Node en renderer, sandbox).
-- **Autorización por usuario en API:** las rutas que operan sobre cuentas validan identidad y propiedad del recurso.
+- **Aislamiento del renderer (Electron):** configuración orientada a reducir superficie de ataque.
+- **Política CSP en la UI:** se limita la carga/conexión a orígenes específicos :contentReference[oaicite:3]{index=3}
+- **Empaquetado:** ASAR habilitado y compresión máxima para distribución :contentReference[oaicite:4]{index=4}
 
-> Nota: este README describe el enfoque general. Los detalles finos de implementación se mantienen en el código.
+### Limitaciones (amenazas fuera de alcance)
+- Si tu equipo está comprometido (malware/keylogger), ninguna app de passwords puede garantizar protección total.
+- Si olvidás la contraseña maestra, **no hay recuperación** del vault (por diseño).
 
 ---
 
@@ -58,3 +81,28 @@ Este repositorio implementa medidas para reducir riesgos comunes, sin exponer de
 - **Hosting backend:** Render
 
 ---
+
+## 🧑‍💻 Desarrollo
+
+Requisitos: Node.js (solo para dev)
+
+```bash
+npm install
+npm run start
+```
+
+Build local:
+
+```bash
+npm run pack     # build en carpeta (sin instalador)
+npm run dist     # genera instalador y portable
+```
+Scripts y targets (NSIS + portable)
+
+---
+
+## 🛡️ Reporte de seguridad
+
+Si encontrás una vulnerabilidad, por favor abrí un issue solo si no expone datos sensibles.
+Para reportes privados, contactame por el medio que figure en mi perfil de GitHub.
+
