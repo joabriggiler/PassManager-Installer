@@ -443,7 +443,7 @@ if (document.readyState === 'loading') {
     inicializarApp();
 }
 
-function mostrarConfirmacionCustom(mensaje) {
+function mostrarConfirmacionCustom(mensaje, cancelOption = true) {
     const opacador = document.querySelector('.opacador');
     const txtMensaje = opacador.querySelector('.alert-body p');
     
@@ -455,6 +455,8 @@ function mostrarConfirmacionCustom(mensaje) {
         const btnAceptar = document.getElementById('alert_aceptar');
         const btnCancelar = document.getElementById('alert_cancelar');
         const btnCerrar = document.getElementById('close_alert');
+
+        if(!cancelOption) btnCancelar.style.display = "none";
 
         function finalizar(valor) {
             opacador.classList.remove("enabled");

@@ -14,6 +14,7 @@
     "dist": "electron-builder --publish always"
   },
   "devDependencies": {
+    "cz-conventional-changelog": "^3.3.0",
     "electron": "^30.5.1",
     "electron-builder": "^24.13.3",
     "electron-reloader": "^1.2.3"
@@ -57,5 +58,10 @@
   },
   "dependencies": {
     "electron-updater": "^6.7.3"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }

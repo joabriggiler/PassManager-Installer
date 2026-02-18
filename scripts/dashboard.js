@@ -19,10 +19,10 @@ async function obtenerCuentasUsuario() {
 
         // descifrar en cliente
         const cuentas = await Promise.all(
-        resultado.cuentas.map(async (row) => {
-            const data = await vault.decryptObject(row.blob);
-            return { id: row.id, ...data };
-        })
+            resultado.cuentas.map(async (row) => {
+                const data = await vault.decryptObject(row.blob);
+                return { id: row.id, ...data };
+            })
         );
 
         cuentas.sort((a, b) => (a.servicio ?? "").localeCompare((b.servicio ?? ""), "es", { sensitivity: "base" }));
@@ -57,6 +57,27 @@ function alternarVisibilidadPassword(el) {
     }
 }
 
+function verificarPasswordRepetidas(cuentas) {
+    if (!cuentas || cuentas.length === 0) return {};
+
+    const frecuencias = {};
+
+    // 1. Contamos cuántas veces aparece cada contraseña
+    cuentas.forEach(cuenta => {
+        const pass = cuenta.pass_servicio;
+        if (pass) {
+            frecuencias[pass] = (frecuencias[pass] || 0) + 1;
+        }
+    });
+
+    // 2. Retornamos el objeto de frecuencias para usarlo en el renderizado
+    return frecuencias;
+}
+function lanzarAlertaSeguridad() {
+    const mensaje = "⚠️ Riesgo de Seguridad:\nEsta contraseña se repite en más de 3 cuentas.\n\nSe recomienda usar contraseñas únicas para cada servicio.";
+    mostrarConfirmacionCustom(mensaje, false);
+}
+
 function escapeHtml(text) {
     if (!text) return text;
     return text
@@ -74,14 +95,22 @@ function renderizarCuentas(lista, limpiar = false) {
 
     if (limpiar) contenedor.innerHTML = "";
 
+    const frecuencias = {};
+    todasLasCuentas.forEach(c => {
+        if (c.pass_servicio) frecuencias[c.pass_servicio] = (frecuencias[c.pass_servicio] || 0) + 1;
+    });
+
     let htmlBuffer = ""; // Creamos un string gigante para insertarlo de una sola vez (más rápido)
 
     lista.forEach(cuenta => {
+        const esInsegura = frecuencias[cuenta.pass_servicio] > 3;
+        const alert = esInsegura ? 'alert-pass' : '';
+
         const nombreBase = (cuenta.url_servicio || cuenta.servicio || "").toLowerCase().replace(/\s/g, '');
         const dominio = nombreBase.includes('.') ? nombreBase : `${nombreBase}.com`;
         
         htmlBuffer += `
-            <div class="aplicacion columna" data-id="${cuenta.id}">
+            <div class="aplicacion columna ${alert}" data-id="${cuenta.id}">
                 <span class="load-page disabled">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><radialGradient id="a11" cx=".66" fx=".66" cy=".3125" fy=".3125" gradientTransform="scale(1.5)"><stop offset="0" stop-color="#FFFFFF"></stop><stop offset=".3" stop-color="#FFFFFF" stop-opacity=".9"></stop><stop offset=".6" stop-color="#FFFFFF" stop-opacity=".6"></stop><stop offset=".8" stop-color="#FFFFFF" stop-opacity=".3"></stop><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"></stop></radialGradient><circle transform-origin="center" fill="none" stroke="url(#a11)" stroke-width="23" stroke-linecap="round" stroke-dasharray="200 1000" stroke-dashoffset="0" cx="100" cy="100" r="70"><animateTransform type="rotate" attributeName="transform" calcMode="spline" dur="2" values="360;0" keyTimes="0;1" keySplines="0 0 1 1" repeatCount="indefinite"></animateTransform></circle><circle transform-origin="center" fill="none" opacity=".2" stroke="#FFFFFF" stroke-width="23" stroke-linecap="round" cx="100" cy="100" r="70"></circle></svg>
                 </span>
@@ -103,6 +132,11 @@ function renderizarCuentas(lista, limpiar = false) {
                         <p class="anotacion txt-password">******</p>
                     </div>
                 </div>
+
+                ${esInsegura ? `
+                <svg onclick="lanzarAlertaSeguridad()" class="svg-alert" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M13.299,3.1477 L21.933,18.1022 C22.5103,19.1022 21.7887,20.3522 20.634,20.3522 L3.36601,20.3522 C2.21131,20.3522 1.48962,19.1022 2.06697,18.1022 L10.7009,3.14771 C11.2783,2.14771 12.7217,2.1477 13.299,3.1477 Z M12,15 C11.4477,15 11,15.4477 11,16 C11,16.5523 11.4477,17 12,17 C12.5523,17 13,16.5523 13,16 C13,15.4477 12.5523,15 12,15 Z M12,8 C11.48715,8 11.0644908,8.38604429 11.0067275,8.88337975 L11,9 L11,13 C11,13.5523 11.4477,14 12,14 C12.51285,14 12.9355092,13.613973 12.9932725,13.1166239 L13,13 L13,9 C13,8.44772 12.5523,8 12,8 Z" fill="#e2d701"></path>
+                </svg>` : ''}
             </div>
         `;
     });
@@ -153,6 +187,7 @@ async function cargarCuentasEnPantalla() {
         }
 
         todasLasCuentas = listaCuentas;
+        verificarPasswordRepetidas(todasLasCuentas);
         cuentasVisibles = 0;
 
         // Render inicial

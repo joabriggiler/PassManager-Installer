@@ -33,7 +33,7 @@ let pendingUpdateReady = false;
 
 function createWindow() {
     win = new BrowserWindow({
-        width: 400,
+        width: 850,
         height: 700,
         minWidth: 350,
         minHeight: 500,
